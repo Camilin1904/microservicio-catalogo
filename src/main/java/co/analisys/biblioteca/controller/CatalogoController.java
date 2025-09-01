@@ -6,6 +6,7 @@ import co.analisys.biblioteca.service.CatalogoService;
 import io.swagger.v3.oas.annotations.Operation;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,6 +27,7 @@ public class CatalogoController {
         description = "Obtiene los detalles de un libro dado su ID."
     )
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ROLE_LIBRARIAN', 'ROLE_USER')")
     public Libro obtenerLibro(@PathVariable String id) {
         return catalogoService.obtenerLibro(new LibroId(id));
     }
@@ -35,6 +37,7 @@ public class CatalogoController {
         description = "Verifica si un libro está disponible."
     )
     @GetMapping("/{id}/disponible")
+    @PreAuthorize("hasAnyRole('ROLE_LIBRARIAN', 'ROLE_USER')")
     public boolean isLibroDisponible(@PathVariable String id) {
         Libro libro = catalogoService.obtenerLibro(new LibroId(id));
         return libro != null && libro.isDisponible();
@@ -45,6 +48,7 @@ public class CatalogoController {
         description = "Actualiza el estado de disponibilidad de un libro."
     )
     @PutMapping("/{id}/disponibilidad")
+    @PreAuthorize("hasRole('ROLE_LIBRARIAN')")
     public void actualizarDisponibilidad(@PathVariable String id, @RequestBody boolean disponible) {
         catalogoService.actualizarDisponibilidad(new LibroId(id), disponible);
     }
@@ -54,6 +58,7 @@ public class CatalogoController {
         description = "Busca libros por título, autor o género."
     )
     @GetMapping("/buscar")
+    @PreAuthorize("hasAnyRole('ROLE_LIBRARIAN', 'ROLE_USER')")
     public List<Libro> buscarLibros(@RequestParam String criterio) {
         return catalogoService.buscarLibros(criterio);
     }
